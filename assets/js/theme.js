@@ -74,14 +74,32 @@ function createThemeToggleButton() {
   `;
   btn.addEventListener('click', toggleTheme);
   
-  btn.addEventListener('mouseenter', () => {
-    btn.style.borderColor = 'var(--color-primary)';
-    btn.style.boxShadow = 'var(--shadow-md)';
+  const updateHoverStyles = () => {
+    const style = getComputedStyle(document.documentElement);
+    const primaryColor = style.getPropertyValue('--color-primary').trim();
+    const borderColor = style.getPropertyValue('--color-border').trim();
+    const shadowMd = style.getPropertyValue('--shadow-md').trim();
+    const shadowSm = style.getPropertyValue('--shadow-sm').trim();
+    
+    btn.addEventListener('mouseenter', () => {
+      btn.style.borderColor = primaryColor;
+      btn.style.boxShadow = shadowMd;
+    }, { once: true });
+    
+    btn.addEventListener('mouseleave', () => {
+      btn.style.borderColor = borderColor;
+      btn.style.boxShadow = shadowSm;
+    }, { once: true });
+  };
+  
+  // Initial setup
+  updateHoverStyles();
+  
+  // Re-attach on theme change
+  const observer = new MutationObserver(() => {
+    updateHoverStyles();
   });
-  btn.addEventListener('mouseleave', () => {
-    btn.style.borderColor = 'var(--color-border)';
-    btn.style.boxShadow = 'var(--shadow-sm)';
-  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   
   return btn;
 }

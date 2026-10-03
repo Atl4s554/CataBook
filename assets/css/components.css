@@ -35,7 +35,7 @@
 }
 
 .btn-primary-custom:focus, .btn-outline-custom:focus, .btn-danger-custom:focus {
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.25);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 44, 62, 80), 0.25);
 }
 
 .btn-outline-custom {
@@ -106,7 +106,7 @@
   background-color: var(--color-white);
   border-color: var(--color-border-focus);
   outline: 0;
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.15);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 44, 62, 80), 0.15);
 }
 
 .form-control-custom::placeholder {
@@ -313,7 +313,7 @@
 
 .drop-zone:hover, .drop-zone.drag-over {
   border-color: var(--color-primary);
-  background-color: rgba(44, 62, 80, 0.03);
+  background-color: rgba(var(--color-primary-rgb, 44, 62, 80), 0.05);
 }
 
 .drop-zone.has-file {
@@ -518,9 +518,9 @@
   text-transform: capitalize;
 }
 
-.badge-status--reading { background: rgba(52, 152, 219, 0.15); color: var(--color-info); }
-.badge-status--read { background: rgba(39, 174, 96, 0.15); color: var(--color-success); }
-.badge-status--want_to_read { background: rgba(243, 156, 18, 0.15); color: var(--color-warning); }
+.badge-status--reading { background: rgba(var(--color-info-rgb, 52, 152, 219), 0.15); color: var(--color-info); }
+.badge-status--read { background: rgba(var(--color-success-rgb, 39, 174, 96), 0.15); color: var(--color-success); }
+.badge-status--want_to_read { background: rgba(var(--color-warning-rgb, 243, 156, 18), 0.15); color: var(--color-warning); }
 
 .skeleton {
   background: linear-gradient(90deg, var(--color-border) 25%, var(--color-light) 50%, var(--color-border) 75%);
