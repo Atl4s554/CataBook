@@ -140,7 +140,8 @@ function syncURL() {
 }
 
 async function loadBooks() {
-  const grid = document.getElementById('books-grid');
+  const table = document.getElementById('books-table');
+  const tbody = document.getElementById('books-tbody');
   const pagination = document.getElementById('pagination');
   const emptyState = document.getElementById('empty-state');
   const resultsInfo = document.getElementById('results-info');
@@ -167,13 +168,18 @@ async function loadBooks() {
       renderPagination();
       updateResultsInfo();
 
-      grid.style.display = books.length ? 'grid' : 'none';
-      emptyState.style.display = books.length ? 'none' : 'block';
+      if (books.length) {
+        table.style.display = 'block';
+        emptyState.style.display = 'none';
+      } else {
+        table.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
       pagination.style.display = state.totalPages > 1 ? 'flex' : 'none';
     }
   } catch (error) {
     showToast('Erro ao carregar livros: ' + error.message, 'error');
-    grid.style.display = 'none';
+    table.style.display = 'none';
     emptyState.style.display = 'block';
     pagination.style.display = 'none';
   } finally {
@@ -182,10 +188,10 @@ async function loadBooks() {
 }
 
 function renderBooks(books) {
-  const grid = document.getElementById('books-grid');
-  grid.innerHTML = books.map(book => createBookCard(book)).join('');
+  const tbody = document.getElementById('books-tbody');
+  tbody.innerHTML = books.map(book => createBookRow(book)).join('');
 
-  grid.querySelectorAll('.btn-edit').forEach(btn => {
+  tbody.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -193,7 +199,7 @@ function renderBooks(books) {
     });
   });
 
-  grid.querySelectorAll('.btn-delete').forEach(btn => {
+  tbody.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -202,32 +208,34 @@ function renderBooks(books) {
   });
 }
 
-function createBookCard(book) {
+function createBookRow(book) {
   const coverUrl = book.cover_url || '/assets/img/placeholder-book.svg';
   const hasCover = !!book.cover_url;
 
   return `
-    <article class="card-book" data-id="${book.id}">
-      <img src="${coverUrl}" alt="${escapeHtml(book.title)}" class="card-book__image" loading="lazy">
-      <div class="card-book__body">
-        <h3 class="card-book__title text-truncate-2" title="${escapeHtml(book.title)}">${escapeHtml(book.title)}</h3>
-        <p class="card-book__meta">
-          <span>ISBN: ${escapeHtml(book.isbn)}</span>
-          ${book.code ? ` • Código: ${escapeHtml(book.code)}` : ''}
-        </p>
-        ${book.description ? `<p class="card-book__description text-truncate-3">${escapeHtml(book.description)}</p>` : ''}
-        <div class="card-book__actions">
-          <a href="/pages/book-form.html?id=${book.id}" class="btn btn-outline-custom btn-sm btn-edit" data-id="${book.id}">
+    <tr data-id="${book.id}">
+      <td>
+        <img src="${coverUrl}" alt="${escapeHtml(book.title)}" class="book-cover-thumb" loading="lazy" style="width: 40px; height: 60px; object-fit: cover; border-radius: 4px; background: var(--color-light);">
+      </td>
+      <td>
+        <div class="fw-medium text-truncate" style="max-width: 300px;" title="${escapeHtml(book.title)}">${escapeHtml(book.title)}</div>
+        ${book.description ? `<div class="text-muted small text-truncate" style="max-width: 300px;">${escapeHtml(book.description)}</div>` : ''}
+      </td>
+      <td class="text-muted small">${escapeHtml(book.isbn)}</td>
+      <td class="text-muted small">${escapeHtml(book.code || '—')}</td>
+      <td class="text-muted small">${escapeHtml(book.author || '—')}</td>
+      <td class="text-muted small">${escapeHtml(book.genre || '—')}</td>
+      <td>
+        <div class="d-flex gap-1">
+          <a href="/pages/book-form.html?id=${book.id}" class="btn btn-outline-custom btn-sm btn-edit" data-id="${book.id}" title="Editar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-            Editar
           </a>
-          <button type="button" class="btn btn-danger-custom btn-sm btn-delete" data-id="${book.id}" data-title="${escapeHtml(book.title)}">
+          <button type="button" class="btn btn-danger-custom btn-sm btn-delete" data-id="${book.id}" data-title="${escapeHtml(book.title)}" title="Excluir">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            Excluir
           </button>
         </div>
-      </div>
-    </article>
+      </td>
+    </tr>
   `;
 }
 
@@ -350,15 +358,17 @@ function createConfirmModal(title, message, onConfirm) {
 }
 
 function showGridLoading(show) {
-  const grid = document.getElementById('books-grid');
+  const table = document.getElementById('books-table');
   const overlay = document.getElementById('grid-loading-overlay');
+
+  if (!table || !overlay) return;
 
   if (show) {
     overlay.classList.remove('d-none');
-    grid.style.opacity = '0.5';
+    table.style.opacity = '0.5';
   } else {
     overlay.classList.add('d-none');
-    grid.style.opacity = '1';
+    table.style.opacity = '1';
   }
 }
 

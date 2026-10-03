@@ -268,7 +268,10 @@ async function handleSubmit(e) {
   const form = e.target;
   const submitBtn = document.getElementById('submit-btn');
 
-  if (!validateForm()) return;
+  if (!validateForm()) {
+    console.log('[handleSubmit] Validation failed');
+    return;
+  }
 
   showLoading(true, submitBtn);
 
@@ -287,6 +290,8 @@ async function handleSubmit(e) {
       formData.append('cover', coverFile);
     }
 
+    console.log('[handleSubmit] Sending FormData:', Object.fromEntries(formData.entries()));
+
     let response;
     if (currentMode === 'edit') {
       response = await api.upload(`/books/${currentBookId}`, formData);
@@ -294,12 +299,15 @@ async function handleSubmit(e) {
       response = await api.upload('/books', formData);
     }
 
+    console.log('[handleSubmit] Response:', response);
+
     if (response.success) {
       showToast(currentMode === 'edit' ? 'Livro atualizado com sucesso' : 'Livro cadastrado com sucesso', 'success');
       window.formDirty = false;
       setTimeout(() => window.location.href = '/pages/book-list.html', 1000);
     }
   } catch (error) {
+    console.error('[handleSubmit] Error:', error);
     if (error instanceof ApiError && error.status === 400 && error.details) {
       Object.entries(error.details).forEach(([field, message]) => {
         const input = form.querySelector(`[name="${field}"]`);

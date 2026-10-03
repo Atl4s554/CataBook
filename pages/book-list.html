@@ -30,8 +30,8 @@
       <header class="page-header">
         <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3 mb-4">
           <div>
-            <h1 class="page-title">Meus Livros</h1>
-            <p class="page-subtitle">Gerencie sua biblioteca pessoal</p>
+            <h1 class="page-title">Livros</h1>
+            <p class="page-subtitle">Gerencie a biblioteca</p>
           </div>
           <a href="book-form.html" class="btn btn-primary-custom" id="new-book-btn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -79,7 +79,22 @@
         </div>
       </header>
 
-      <div id="books-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" role="list" aria-label="Lista de livros"></div>
+      <div id="books-table" class="table-responsive" role="list" aria-label="Lista de livros">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 60px;">Capa</th>
+              <th scope="col">Título</th>
+              <th scope="col">ISBN</th>
+              <th scope="col">Código</th>
+              <th scope="col">Autor</th>
+              <th scope="col">Gênero</th>
+              <th scope="col" style="width: 100px;">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="books-tbody"></tbody>
+        </table>
+      </div>
 
       <div id="empty-state" class="empty-state d-none" aria-live="polite">
         <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">

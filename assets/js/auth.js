@@ -5,12 +5,17 @@ let accessToken = null;
 let user = null;
 let isDemoMode = false;
 
-function isFileProtocol() {
-  return window.location.protocol === 'file:';
+function isDemoModeCheck() {
+  const hostname = window.location.hostname;
+  return window.location.protocol === 'file:' ||
+         hostname === 'localhost' ||
+         hostname === '127.0.0.1' ||
+         hostname === '0.0.0.0' ||
+         hostname.endsWith('.local');
 }
 
 function initDemoMode() {
-  if (isFileProtocol() && !sessionStorage.getItem('cata_book_demo_disabled')) {
+  if (isDemoModeCheck() && !sessionStorage.getItem('cata_book_demo_disabled')) {
     isDemoMode = true;
     accessToken = 'demo-token-' + Date.now();
     user = { id: 'demo', name: 'Usuário Demo', email: 'demo@catalivro.local' };

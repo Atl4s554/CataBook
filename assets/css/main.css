@@ -165,6 +165,44 @@
   color: var(--color-text-muted) !important;
 }
 
+[data-theme="dark"] .table {
+  --bs-table-bg: var(--color-white);
+  --bs-table-striped-bg: var(--color-light);
+  --bs-table-hover-bg: var(--color-light);
+  --bs-table-active-bg: var(--color-light);
+  --bs-table-border-color: var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .table-responsive {
+  background-color: var(--color-white);
+}
+
+[data-theme="dark"] .table thead th {
+  background-color: var(--color-light);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .table tbody td {
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .table tbody tr:hover td {
+  background-color: var(--color-light);
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > td {
+  background-color: var(--color-light);
+}
+
+[data-theme="dark"] .book-cover-thumb {
+  background: var(--color-light);
+  border: 1px solid var(--color-border);
+}
+
 .theme-toggle .theme-icon-sun,
 .theme-toggle .theme-text-light {
   display: none;

@@ -1,136 +1,89 @@
+import { bookRepository } from './storage.js';
+import { auth } from './auth.js';
+
 const API_BASE = '/api';
 const DEFAULT_TIMEOUT = 30000;
 
-let demoBooks = [
-  { id: '1', title: 'Dom Casmurro', isbn: '978-85-3590-277-8', code: 'LIV-001', author: 'Machado de Assis', genre: 'Romance', year: 1899, publisher: 'Companhia das Letras', status: 'read', description: 'Clássico da literatura brasileira narrado por Bentinho.', cover_url: null, created_at: '2024-01-15T10:30:00Z' },
-  { id: '2', title: 'O Senhor dos Anéis: A Sociedade do Anel', isbn: '978-85-3361-334-9', code: 'LIV-002', author: 'J.R.R. Tolkien', genre: 'Fantasia', year: 1954, publisher: 'HarperCollins', status: 'reading', description: 'Primeiro volume da trilogia épica.', cover_url: null, created_at: '2024-01-20T14:15:00Z' },
-  { id: '3', title: '1984', isbn: '978-85-254-3549-2', code: 'LIV-003', author: 'George Orwell', genre: 'Ficção Científica', year: 1949, publisher: 'Companhia das Letras', status: 'read', description: 'Distopia clássica sobre vigilância totalitária.', cover_url: null, created_at: '2024-02-01T09:00:00Z' },
-  { id: '4', title: 'A Revolução dos Bichos', isbn: '978-85-3591-484-9', code: 'LIV-004', author: 'George Orwell', genre: 'Fábula Política', year: 1945, publisher: 'Companhia das Letras', status: 'want_to_read', description: 'Sátira sobre revolução e corrupção.', cover_url: null, created_at: '2024-02-10T16:45:00Z' },
-  { id: '5', title: 'Cem Anos de Solidão', isbn: '978-85-3590-839-6', code: 'LIV-005', author: 'Gabriel García Márquez', genre: 'Realismo Mágico', year: 1967, publisher: 'Record', status: 'read', description: 'Obra-prima do realismo mágico latino-americano.', cover_url: null, created_at: '2024-02-15T11:20:00Z' },
-];
-
-let demoBookId = 6;
-
 function isDemoMode() {
-  return window.location.protocol === 'file:';
+  try {
+    if (localStorage.getItem('cata_book_use_api') === '1') return false;
+  } catch {}
+  return true;
 }
 
-function generateMockBook(data) {
-  return {
-    id: String(demoBookId++),
-    title: data.title,
-    isbn: data.isbn,
-    code: data.code,
-    author: data.author || '',
-    genre: data.genre || '',
-    year: data.year ? parseInt(data.year) : null,
-    publisher: data.publisher || '',
-    status: data.status || '',
-    description: data.description || '',
-    cover_url: null,
-    created_at: new Date().toISOString(),
-  };
+function parseFormData(formData) {
+  const data = {};
+  for (const [key, value] of formData.entries()) {
+    data[key] = value;
+  }
+  return data;
 }
 
-function filterBooks(params) {
-  let result = [...demoBooks];
-  
-  if (params.q) {
-    const query = params.q.toLowerCase();
-    result = result.filter(b => 
-      b.title.toLowerCase().includes(query) ||
-      b.isbn.includes(query) ||
-      b.code.toLowerCase().includes(query) ||
-      (b.description && b.description.toLowerCase().includes(query))
-    );
-  }
-  
-  if (params.has_cover === 'true') {
-    result = result.filter(b => b.cover_url);
-  }
-  
-  if (params.sort) {
-    const [field, dir] = params.sort.split(':');
-    result.sort((a, b) => {
-      let aVal = a[field];
-      let bVal = b[field];
-      if (typeof aVal === 'string') {
-        aVal = aVal.toLowerCase();
-        bVal = bVal.toLowerCase();
-      }
-      if (dir === 'asc') return aVal > bVal ? 1 : -1;
-      return aVal < bVal ? 1 : -1;
-    });
-  }
-  
-  return result;
-}
-
-async function mockRequest(endpoint, options = {}) {
-  await new Promise(r => setTimeout(r, 300));
+async function repositoryRequest(endpoint, options = {}) {
+  await new Promise(r => setTimeout(r, 150));
   
   const method = options.method || 'GET';
+  const isUpload = options.body instanceof FormData;
+  const bodyData = isUpload ? parseFormData(options.body) : options.body;
   
-  if (endpoint === '/books' && method === 'GET') {
-    const params = new URLSearchParams(options.body?.toString() || '');
-    const page = parseInt(params.get('page')) || 1;
-    const limit = parseInt(params.get('limit')) || 30;
-    const filtered = filterBooks(Object.fromEntries(params));
-    const total = filtered.length;
-    const start = (page - 1) * limit;
-    const books = filtered.slice(start, start + limit);
-    
-    return { success: true, data: { books, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } } };
+  // Parse query string from endpoint (api.get appends params to URL)
+  const [path, queryString] = endpoint.split('?');
+  const queryParams = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : {};
+  
+  // Books endpoints
+  if (path === '/books' && method === 'GET') {
+    const result = await bookRepository.list(queryParams);
+    return { success: true, data: result };
   }
   
-  if (endpoint.startsWith('/books/') && method === 'GET') {
-    const id = endpoint.split('/')[2];
-    const book = demoBooks.find(b => b.id === id);
-    if (book) return { success: true, data: { book } };
-    throw new ApiError('Livro não encontrado', 404);
-  }
-  
-  if (endpoint === '/books' && (method === 'POST' || method === 'PUT')) {
-    const formData = options.body;
-    const data = {};
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    let book;
-    if (method === 'POST') {
-      book = generateMockBook(data);
-      demoBooks.unshift(book);
-    } else {
-      const id = endpoint.split('/')[2];
-      const idx = demoBooks.findIndex(b => b.id === id);
-      if (idx === -1) throw new ApiError('Livro não encontrado', 404);
-      book = { ...demoBooks[idx], ...data };
-      demoBooks[idx] = book;
+  if (path === '/books' && method === 'POST') {
+    const book = await bookRepository.create(bodyData);
+    if (bodyData.cover instanceof File) {
+      const coverResult = await bookRepository.uploadCover(bodyData.cover);
+      await bookRepository.setCover(book.id, coverResult.cover_url);
+      book.cover_url = coverResult.cover_url;
     }
     return { success: true, data: { book } };
   }
   
-  if (endpoint.startsWith('/books/') && method === 'DELETE') {
-    const id = endpoint.split('/')[2];
-    const idx = demoBooks.findIndex(b => b.id === id);
-    if (idx === -1) throw new ApiError('Livro não encontrado', 404);
-    demoBooks.splice(idx, 1);
+  if (path.startsWith('/books/') && method === 'GET') {
+    const id = path.split('/')[2];
+    const book = await bookRepository.get(id);
+    if (book) return { success: true, data: book };
+    throw new ApiError('Livro não encontrado', 404);
+  }
+  
+  if (path.startsWith('/books/') && (method === 'PUT' || method === 'PATCH' || method === 'POST')) {
+    const id = path.split('/')[2];
+    let book = await bookRepository.update(id, bodyData);
+    if (!book) throw new ApiError('Livro não encontrado', 404);
+    if (bodyData && bodyData.cover instanceof File) {
+      const coverResult = await bookRepository.uploadCover(bodyData.cover);
+      await bookRepository.setCover(book.id, coverResult.cover_url);
+      book = { ...book, cover_url: coverResult.cover_url };
+    }
+    return { success: true, data: { book } };
+  }
+  
+  if (path.startsWith('/books/') && method === 'DELETE') {
+    const id = path.split('/')[2];
+    await bookRepository.delete(id);
     return { success: true, message: 'Livro excluído' };
   }
   
-  if (endpoint === '/auth/login') {
+  if (path === '/auth/login') {
     return { success: true, data: { accessToken: 'demo-token', refreshToken: 'demo-refresh', user: { id: 'demo', name: 'Demo User', email: 'demo@test.com' } } };
   }
   
-  if (endpoint === '/auth/register') {
+  if (path === '/auth/register') {
     return { success: true, data: { accessToken: 'demo-token', refreshToken: 'demo-refresh', user: { id: 'demo', name: 'Demo User', email: 'demo@test.com' } } };
   }
   
-  if (endpoint === '/auth/refresh') {
+  if (path === '/auth/refresh') {
     return { success: true, data: { accessToken: 'demo-token-new' } };
   }
   
-  if (endpoint === '/auth/logout') {
+  if (path === '/auth/logout') {
     return { success: true };
   }
   
@@ -150,7 +103,7 @@ let refreshPromise = null;
 
 async function request(endpoint, options = {}) {
   if (isDemoMode()) {
-    return mockRequest(endpoint, options);
+    return repositoryRequest(endpoint, options);
   }
   
   const url = `${API_BASE}${endpoint}`;
