@@ -10,15 +10,5 @@
   <link rel="stylesheet" href="assets/css/components.css">
 </head>
 <body>
-  <script>
-    (function() {
-      const token = sessionStorage.getItem('cata_book_access_token');
-      if (token) {
-        window.location.href = 'pages/book-list.html';
-      } else {
-        window.location.href = 'pages/login.html';
-      }
-    })();
-  </script>
 </body>
 </html>

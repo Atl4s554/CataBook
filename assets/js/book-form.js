@@ -163,7 +163,6 @@ function populateForm(book) {
   document.getElementById('genre').value = book.genre || '';
   document.getElementById('year').value = book.year || '';
   document.getElementById('publisher').value = book.publisher || '';
-  document.getElementById('status').value = book.status || '';
   document.getElementById('description').value = book.description || '';
 
   if (book.cover_url) {
@@ -180,7 +179,6 @@ function serializeForm() {
     genre: document.getElementById('genre').value.trim(),
     year: document.getElementById('year').value.trim(),
     publisher: document.getElementById('publisher').value.trim(),
-    status: document.getElementById('status').value,
     description: document.getElementById('description').value.trim(),
   };
 }
@@ -283,7 +281,6 @@ async function handleSubmit(e) {
     formData.append('genre', document.getElementById('genre').value.trim());
     formData.append('year', document.getElementById('year').value.trim());
     formData.append('publisher', document.getElementById('publisher').value.trim());
-    formData.append('status', document.getElementById('status').value);
     formData.append('description', document.getElementById('description').value.trim());
 
     if (coverFile) {
