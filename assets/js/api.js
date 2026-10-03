@@ -4,12 +4,29 @@ import { auth } from './auth.js';
 const API_BASE = '/api';
 const DEFAULT_TIMEOUT = 30000;
 
-function isDemoMode() {
+function isLocalMode() {
   try {
-    if (localStorage.getItem('cata_book_use_api') === '1') return false;
+    if (localStorage.getItem('cata_book_local_mode') === 'true') return true;
+    if (localStorage.getItem('cata_book_local_mode') === 'false') return false;
   } catch {}
-  return true;
+  const hostname = window.location.hostname;
+  return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '0.0.0.0' || hostname.endsWith('.local');
 }
+
+function seedDemoUsers() {
+  try {
+    const users = JSON.parse(localStorage.getItem('cata_book_users') || '[]');
+    if (users.length === 0) {
+      const demoUsers = [
+        { id: '1', name: 'Admin Demo', email: 'admin@catalivro.local', password: '123456', role: 'admin', created_at: new Date().toISOString() },
+        { id: '2', name: 'Usuário Demo', email: 'user@catalivro.local', password: '123456', role: 'user', created_at: new Date().toISOString() }
+      ];
+      localStorage.setItem('cata_book_users', JSON.stringify(demoUsers));
+    }
+  } catch {}
+}
+
+seedDemoUsers();
 
 function parseFormData(formData) {
   const data = {};
@@ -21,21 +38,24 @@ function parseFormData(formData) {
 
 async function repositoryRequest(endpoint, options = {}) {
   await new Promise(r => setTimeout(r, 150));
-  
+
   const method = options.method || 'GET';
   const isUpload = options.body instanceof FormData;
-  const bodyData = isUpload ? parseFormData(options.body) : options.body;
-  
-  // Parse query string from endpoint (api.get appends params to URL)
+  let bodyData = isUpload ? parseFormData(options.body) : options.body;
+  if (typeof bodyData === 'string') {
+    try {
+      bodyData = JSON.parse(bodyData);
+    } catch {}
+  }
+
   const [path, queryString] = endpoint.split('?');
   const queryParams = queryString ? Object.fromEntries(new URLSearchParams(queryString)) : {};
-  
-  // Books endpoints
+
   if (path === '/books' && method === 'GET') {
     const result = await bookRepository.list(queryParams);
     return { success: true, data: result };
   }
-  
+
   if (path === '/books' && method === 'POST') {
     const book = await bookRepository.create(bodyData);
     if (bodyData.cover instanceof File) {
@@ -45,14 +65,14 @@ async function repositoryRequest(endpoint, options = {}) {
     }
     return { success: true, data: { book } };
   }
-  
+
   if (path.startsWith('/books/') && method === 'GET') {
     const id = path.split('/')[2];
     const book = await bookRepository.get(id);
     if (book) return { success: true, data: book };
     throw new ApiError('Livro não encontrado', 404);
   }
-  
+
   if (path.startsWith('/books/') && (method === 'PUT' || method === 'PATCH' || method === 'POST')) {
     const id = path.split('/')[2];
     let book = await bookRepository.update(id, bodyData);
@@ -64,30 +84,59 @@ async function repositoryRequest(endpoint, options = {}) {
     }
     return { success: true, data: { book } };
   }
-  
+
   if (path.startsWith('/books/') && method === 'DELETE') {
     const id = path.split('/')[2];
     await bookRepository.delete(id);
     return { success: true, message: 'Livro excluído' };
   }
-  
+
   if (path === '/auth/login') {
-    return { success: true, data: { accessToken: 'demo-token', refreshToken: 'demo-refresh', user: { id: 'demo', name: 'Demo User', email: 'demo@test.com' } } };
+    const { email, password } = bodyData;
+    const users = JSON.parse(localStorage.getItem('cata_book_users') || '[]');
+    const user = users.find(u => u.email === email && u.password === password);
+    if (user) {
+      const { password: _, ...userWithoutPassword } = user;
+      const token = 'local-token-' + Date.now();
+      return { success: true, data: { accessToken: token, refreshToken: token, user: userWithoutPassword } };
+    }
+    throw new ApiError('Credenciais inválidas', 401);
   }
-  
+
   if (path === '/auth/register') {
-    return { success: true, data: { accessToken: 'demo-token', refreshToken: 'demo-refresh', user: { id: 'demo', name: 'Demo User', email: 'demo@test.com' } } };
+    const { email, password, name } = bodyData;
+    const users = JSON.parse(localStorage.getItem('cata_book_users') || '[]');
+    if (users.find(u => u.email === email)) {
+      throw new ApiError('Email já cadastrado', 400);
+    }
+    const user = {
+      id: crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      }),
+      name: name || email.split('@')[0],
+      email,
+      password,
+      created_at: new Date().toISOString()
+    };
+    users.push(user);
+    localStorage.setItem('cata_book_users', JSON.stringify(users));
+    const { password: _, ...userWithoutPassword } = user;
+    const token = 'local-token-' + Date.now();
+    return { success: true, data: { accessToken: token, refreshToken: token, user: userWithoutPassword } };
   }
-  
+
   if (path === '/auth/refresh') {
-    return { success: true, data: { accessToken: 'demo-token-new' } };
+    const token = 'local-token-' + Date.now();
+    return { success: true, data: { accessToken: token } };
   }
-  
+
   if (path === '/auth/logout') {
     return { success: true };
   }
-  
-  throw new ApiError('Endpoint não simulado: ' + endpoint, 501);
+
+  throw new ApiError('Endpoint não implementado no modo local: ' + endpoint, 501);
 }
 
 class ApiError extends Error {
@@ -102,10 +151,10 @@ class ApiError extends Error {
 let refreshPromise = null;
 
 async function request(endpoint, options = {}) {
-  if (isDemoMode()) {
+  if (isLocalMode()) {
     return repositoryRequest(endpoint, options);
   }
-  
+
   const url = `${API_BASE}${endpoint}`;
   const config = {
     headers: {
