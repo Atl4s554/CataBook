@@ -10,7 +10,6 @@ let coverFile = null;
 let originalData = null;
 
 function init() {
-  console.log('Init book-form');
   const params = new URLSearchParams(window.location.search);
   currentBookId = params.get('id');
   currentMode = currentBookId ? 'edit' : 'create';
@@ -108,14 +107,11 @@ function setupISBNValidation() {
 
 function setupAccordion() {
   const headers = document.querySelectorAll('.accordion-custom__header');
-  console.log('Found accordion headers:', headers.length);
   headers.forEach(header => {
     header.addEventListener('click', (e) => { e.preventDefault();
-      console.log('Accordion clicked');
       const expanded = header.getAttribute('aria-expanded') === 'true';
       header.setAttribute('aria-expanded', !expanded);
       const body = header.nextElementSibling;
-      console.log('Body:', body);
       if (!expanded) {
         body.removeAttribute('hidden');
       } else {
@@ -268,7 +264,6 @@ async function handleSubmit(e) {
   const submitBtn = document.getElementById('submit-btn');
 
   if (!validateForm()) {
-    console.log('[handleSubmit] Validation failed');
     return;
   }
 
@@ -290,8 +285,6 @@ async function handleSubmit(e) {
       formData.append('cover', coverFile);
     }
 
-    console.log('[handleSubmit] Sending FormData:', Object.fromEntries(formData.entries()));
-
     let response;
     if (currentMode === 'edit') {
       response = await api.upload(`/books/${currentBookId}`, formData);
@@ -299,15 +292,12 @@ async function handleSubmit(e) {
       response = await api.upload('/books', formData);
     }
 
-    console.log('[handleSubmit] Response:', response);
-
     if (response.success) {
       showToast(currentMode === 'edit' ? 'Livro atualizado com sucesso' : 'Livro cadastrado com sucesso', 'success');
       window.formDirty = false;
       setTimeout(() => window.location.href = '/pages/book-list.html', 1000);
     }
   } catch (error) {
-    console.error('[handleSubmit] Error:', error);
     if (error instanceof ApiError && error.status === 400 && error.details) {
       Object.entries(error.details).forEach(([field, message]) => {
         const input = form.querySelector(`[name="${field}"]`);
