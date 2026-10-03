@@ -42,7 +42,10 @@ function setupEventListeners() {
   form.addEventListener('submit', handleSubmit);
 
   const cancelBtn = document.getElementById('cancel-btn');
-  cancelBtn.addEventListener('click', handleCancel);
+  cancelBtn?.addEventListener('click', handleCancel);
+
+  const cancelBtnBottom = document.getElementById('cancel-btn-bottom');
+  cancelBtnBottom?.addEventListener('click', handleCancel);
 
   const coverInput = document.getElementById('cover');
   coverInput.addEventListener('change', handleFileSelect);
@@ -128,13 +131,6 @@ function setupDirtyCheck() {
     input.addEventListener('change', () => {
       window.formDirty = true;
     });
-  });
-
-  window.addEventListener('beforeunload', (e) => {
-    if (window.formDirty) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
   });
 }
 
@@ -354,7 +350,8 @@ function validateForm() {
   return valid;
 }
 
-function handleCancel() {
+function handleCancel(e) {
+  if (e) e.preventDefault();
   if (window.formDirty) {
     if (!confirm('Você tem alterações não salvas. Deseja realmente sair?')) {
       return;
