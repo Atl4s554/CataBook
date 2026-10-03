@@ -222,6 +222,7 @@ function createBookRow(book) {
         ${book.description ? `<div class="text-muted small text-truncate" style="max-width: 300px;">${escapeHtml(book.description)}</div>` : ''}
       </td>
       <td class="text-muted small">${escapeHtml(book.isbn)}</td>
+      <td class="text-muted small text-center">${escapeHtml(book.quantity || 1)}</td>
       <td class="text-muted small">${escapeHtml(book.code || '—')}</td>
       <td class="text-muted small">${escapeHtml(book.author || '—')}</td>
       <td class="text-muted small">${escapeHtml(book.genre || '—')}</td>

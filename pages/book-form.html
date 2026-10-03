@@ -53,7 +53,13 @@
                   <div id="isbn-feedback" class="isbn-feedback" aria-live="polite"></div>
                 </div>
 
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-2">
+                  <label for="quantity" class="form-label-custom">Quantidade <span class="text-danger" aria-hidden="true">*</span></label>
+                  <input type="number" id="quantity" name="quantity" class="form-control-custom" placeholder="1" min="1" max="9999" value="1" required aria-describedby="quantity-error">
+                  <div class="invalid-feedback" id="quantity-error"></div>
+                </div>
+
+                <div class="col-12 col-md-4">
                   <label for="code" class="form-label-custom">Código Interno <span class="text-danger" aria-hidden="true">*</span></label>
                   <input type="text" id="code" name="code" class="form-control-custom" placeholder="Ex: LIV-001" maxlength="50" required aria-describedby="code-error">
                   <div class="invalid-feedback" id="code-error"></div>

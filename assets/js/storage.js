@@ -109,6 +109,7 @@ export const bookRepository = {
       title: data.title || '',
       isbn: data.isbn || '',
       code: data.code || '',
+      quantity: data.quantity ? parseInt(data.quantity) : 1,
       author: data.author || '',
       genre: data.genre || '',
       year: data.year ? parseInt(data.year) : null,
@@ -129,9 +130,12 @@ export const bookRepository = {
     const idx = books.findIndex(b => b.id === id);
     if (idx === -1) return null;
     const now = new Date().toISOString();
+    const normalizedData = { ...data };
+    if (normalizedData.quantity !== undefined) normalizedData.quantity = parseInt(normalizedData.quantity) || 1;
+    if (normalizedData.year !== undefined) normalizedData.year = normalizedData.year ? parseInt(normalizedData.year) : null;
     const updated = {
       ...books[idx],
-      ...data,
+      ...normalizedData,
       id: books[idx].id,
       created_at: books[idx].created_at,
       updated_at: now,

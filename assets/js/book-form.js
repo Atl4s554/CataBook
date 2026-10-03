@@ -155,6 +155,7 @@ async function loadBook(id) {
 function populateForm(book) {
   document.getElementById('title').value = book.title || '';
   document.getElementById('isbn').value = book.isbn || '';
+  document.getElementById('quantity').value = book.quantity || 1;
   document.getElementById('code').value = book.code || '';
   document.getElementById('author').value = book.author || '';
   document.getElementById('genre').value = book.genre || '';
@@ -171,6 +172,7 @@ function serializeForm() {
   return {
     title: document.getElementById('title').value.trim(),
     isbn: document.getElementById('isbn').value.trim(),
+    quantity: document.getElementById('quantity').value.trim(),
     code: document.getElementById('code').value.trim(),
     author: document.getElementById('author').value.trim(),
     genre: document.getElementById('genre').value.trim(),
@@ -276,6 +278,7 @@ async function handleSubmit(e) {
     const formData = new FormData();
     formData.append('title', document.getElementById('title').value.trim());
     formData.append('isbn', document.getElementById('isbn').value.trim());
+    formData.append('quantity', document.getElementById('quantity').value.trim());
     formData.append('code', document.getElementById('code').value.trim());
     formData.append('author', document.getElementById('author').value.trim());
     formData.append('genre', document.getElementById('genre').value.trim());
@@ -338,6 +341,14 @@ function validateForm() {
     valid = false;
   } else {
     clearError(isbn);
+  }
+
+  const quantity = document.getElementById('quantity');
+  if (!quantity.value.trim() || parseInt(quantity.value) < 1) {
+    showError(quantity, 'Quantidade é obrigatória e deve ser maior que zero');
+    valid = false;
+  } else {
+    clearError(quantity);
   }
 
   const code = document.getElementById('code');
