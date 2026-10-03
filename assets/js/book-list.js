@@ -320,7 +320,7 @@ async function deleteBook(id) {
   }
 }
 
-function createConfirmModal(title, message, onConfirm) {
+export function createConfirmModal(title, message, onConfirm) {
   const modal = document.createElement('div');
   modal.className = 'modal-custom';
   modal.setAttribute('role', 'dialog');

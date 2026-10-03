@@ -2,6 +2,7 @@ import { api, ApiError } from './api.js';
 import { auth } from './auth.js';
 import { validateISBN, formatISBN, validateFile, showError, clearError, setFieldValid } from './validation.js';
 import { showToast } from './toast.js';
+import { createConfirmModal } from './book-list.js';
 
 let currentMode = 'create';
 let currentBookId = null;
@@ -353,11 +354,22 @@ function validateForm() {
 function handleCancel(e) {
   if (e) e.preventDefault();
   if (window.formDirty) {
-    if (!confirm('Você tem alterações não salvas. Deseja realmente sair?')) {
-      return;
-    }
+    const { modal, backdrop } = createConfirmModal(
+      'Descartar alterações?',
+      'Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?',
+      () => {
+        modal.remove();
+        backdrop.remove();
+        window.location.href = '/pages/book-list.html';
+      }
+    );
+    document.body.appendChild(backdrop);
+    document.body.appendChild(modal);
+    modal.querySelector('.btn-danger-custom').textContent = 'Descartar e sair';
+    modal.querySelector('.btn-danger-custom').focus();
+  } else {
+    window.location.href = '/pages/book-list.html';
   }
-  window.location.href = '/pages/book-list.html';
 }
 
 function updatePageTitle(title) {
