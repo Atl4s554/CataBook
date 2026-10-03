@@ -2,7 +2,7 @@ import { api, ApiError } from './api.js';
 import { auth } from './auth.js';
 import { validateISBN, formatISBN, validateFile, showError, clearError, setFieldValid } from './validation.js';
 import { showToast } from './toast.js';
-import { createConfirmModal } from './book-list.js';
+import { createConfirmModal } from './ui/modal.js';
 
 let currentMode = 'create';
 let currentBookId = null;
