@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CataBook - Lista de Livros">
+  <title>Meus Livros - CataBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+  <header class="header-nav" role="banner">
+    <a href="book-form.html" class="header-nav__brand" aria-label="CataBook - Novo Livro">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      CataBook
+    </a>
+    <div class="header-nav__actions">
+      <span id="user-name" class="header-nav__user d-none d-sm-inline"></span>
+      <a href="#" class="btn btn-outline-custom btn-sm" data-action="logout">Sair</a>
+    </div>
+  </header>
+
+  <main class="main-content" role="main">
+    <div class="container-custom">
+      <header class="page-header">
+        <div class="d-flex flex-column flex-md-row align-items-start justify-content-between gap-3 mb-4">
+          <div>
+            <h1 class="page-title">Meus Livros</h1>
+            <p class="page-subtitle">Gerencie sua biblioteca pessoal</p>
+          </div>
+          <a href="book-form.html" class="btn btn-primary-custom" id="new-book-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Novo Livro
+          </a>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body">
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+              <form class="search-form" id="search-form" role="search" style="flex: 1; min-width: 200px;">
+                <div class="input-group-custom flex-grow-1" style="max-width: 400px;">
+                  <span class="input-group-text" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  </span>
+                  <input type="search" id="search-input" class="form-control-custom search-form__input" placeholder="Buscar por título, ISBN, código..." aria-label="Buscar livros" autocomplete="off">
+                </div>
+              </form>
+              <div class="dropdown">
+                <button class="btn btn-outline-custom dropdown-toggle" type="button" id="filter-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                  Filtros
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filter-dropdown">
+                  <li><h6 class="dropdown-header">Ordenar por</h6></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="created_at:desc">Mais recentes</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="created_at:asc">Mais antigos</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="title:asc">Título (A-Z)</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="title:desc">Título (Z-A)</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="code:asc">Código (A-Z)</a></li>
+                  <li><a class="dropdown-item sort-option" href="#" data-sort="code:desc">Código (Z-A)</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><h6 class="dropdown-header">Filtros</h6></li>
+                  <li>
+                    <label class="dropdown-item d-flex align-items-center gap-2 py-2">
+                      <input type="checkbox" class="form-check-input" id="filter-cover">
+                      <span class="mb-0">Apenas com capa</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p id="results-info" class="text-muted small mb-0 mt-2"></p>
+          </div>
+        </div>
+      </header>
+
+      <div id="books-grid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" role="list" aria-label="Lista de livros"></div>
+
+      <div id="empty-state" class="empty-state d-none" aria-live="polite">
+        <svg class="empty-state__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <h2 class="empty-state__title">Nenhum livro cadastrado</h2>
+        <p class="empty-state__text">Comece sua biblioteca adicionando o primeiro livro.</p>
+        <a href="book-form.html" class="btn btn-primary-custom">Adicionar primeiro livro</a>
+      </div>
+
+      <nav id="pagination" class="pagination-custom d-none" aria-label="Paginação">
+        <a href="#" class="page-link-custom" id="prev-page" aria-label="Página anterior">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </a>
+        <div id="page-numbers" class="d-flex gap-1"></div>
+        <a href="#" class="page-link-custom" id="next-page" aria-label="Próxima página">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <div id="grid-loading-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.9); z-index: 9999; pointer-events: none;">
+    <div class="text-center">
+      <div class="spinner spinner-lg text-primary mb-3"></div>
+      <p class="text-muted">Carregando livros...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfH" crossorigin="anonymous"></script>
+  <script type="module" src="../assets/js/book-list.js"></script>
+</body>
+</html>

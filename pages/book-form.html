@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CataBook - Formulário de Livro">
+  <title id="page-title">Novo Livro - CataBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+  <header class="header-nav" role="banner">
+    <a href="book-list.html" class="header-nav__brand" aria-label="CataBook - Início">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      CataBook
+    </a>
+    <div class="header-nav__actions">
+      <span id="user-name" class="header-nav__user d-none d-sm-inline"></span>
+      <a href="#" class="btn btn-outline-custom btn-sm" data-action="logout">Sair</a>
+    </div>
+  </header>
+
+  <main class="main-content" role="main">
+    <div class="container-custom">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+          <header class="page-header d-flex flex-column flex-md-row align-items-start justify-content-between gap-3 mb-4">
+            <div>
+              <h1 id="page-title" class="page-title">Novo Livro</h1>
+              <p class="page-subtitle">Preencha as informações do livro</p>
+            </div>
+            <a href="book-list.html" class="btn btn-outline-custom" id="cancel-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              Cancelar
+            </a>
+          </header>
+
+          <form id="book-form" class="card shadow-sm border-0" novalidate enctype="multipart/form-data">
+            <div class="card-body p-4 p-md-5">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label for="title" class="form-label-custom">Nome do Livro <span class="text-danger" aria-hidden="true">*</span></label>
+                  <input type="text" id="title" name="title" class="form-control-custom" placeholder="Ex: Dom Casmurro" maxlength="200" required aria-describedby="title-error">
+                  <div class="invalid-feedback" id="title-error"></div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="isbn" class="form-label-custom">ISBN <span class="text-danger" aria-hidden="true">*</span></label>
+                  <input type="text" id="isbn" name="isbn" class="form-control-custom" placeholder="Ex: 978-85-3590-277-8" maxlength="17" required aria-describedby="isbn-feedback">
+                  <div id="isbn-feedback" class="isbn-feedback" aria-live="polite"></div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label for="code" class="form-label-custom">Código Interno <span class="text-danger" aria-hidden="true">*</span></label>
+                  <input type="text" id="code" name="code" class="form-control-custom" placeholder="Ex: LIV-001" maxlength="50" required aria-describedby="code-error">
+                  <div class="invalid-feedback" id="code-error"></div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label-custom">Foto da Capa <span class="text-danger" aria-hidden="true">*</span></label>
+                  <div class="drop-zone" id="drop-zone" role="button" tabindex="0" aria-label="Área para upload da capa do livro">
+                    <input type="file" id="cover" name="cover" class="drop-zone__input" accept="image/jpeg,image/png,image/webp" aria-describedby="cover-error">
+                    <svg class="drop-zone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p class="drop-zone__text">Arraste a imagem aqui ou clique para selecionar</p>
+                    <p class="drop-zone__text text-muted small mt-1">JPG, PNG ou WebP • Máx. 5MB</p>
+                    <div class="drop-zone__preview" id="cover-preview" style="display: none;" aria-hidden="true">
+                      <img id="cover-preview-img" alt="Pré-visualização da capa">
+                      <button type="button" class="drop-zone__remove" id="remove-cover" aria-label="Remover imagem" style="display: none;">×</button>
+                    </div>
+                  </div>
+                  <div class="invalid-feedback" id="cover-error"></div>
+                </div>
+              </div>
+
+              <div class="accordion-custom mt-4" id="details-accordion">
+                <div class="accordion-custom__item">
+                  <button class="accordion-custom__header" aria-expanded="false" aria-controls="details-body">
+                    <span>Detalhes Adicionais (Opcionais)</span>
+                    <svg class="accordion-custom__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="accordion-custom__body" id="details-body" hidden>
+                    <div class="row g-3 mt-3">
+                      <div class="col-12 col-md-6">
+                        <label for="author" class="form-label-custom">Autor</label>
+                        <input type="text" id="author" name="author" class="form-control-custom" placeholder="Ex: Machado de Assis" maxlength="200">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label for="genre" class="form-label-custom">Gênero / Categoria</label>
+                        <input type="text" id="genre" name="genre" class="form-control-custom" placeholder="Ex: Romance, Ficção" maxlength="100">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label for="year" class="form-label-custom">Ano de Publicação</label>
+                        <input type="number" id="year" name="year" class="form-control-custom" placeholder="Ex: 1899" min="1000" max="2099" step="1">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label for="publisher" class="form-label-custom">Editora</label>
+                        <input type="text" id="publisher" name="publisher" class="form-control-custom" placeholder="Ex: Companhia das Letras" maxlength="200">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label for="status" class="form-label-custom">Status</label>
+                        <select id="status" name="status" class="form-control-custom">
+                          <option value="">Selecione</option>
+                          <option value="reading">Lendo</option>
+                          <option value="read">Lido</option>
+                          <option value="want_to_read">Quero Ler</option>
+                        </select>
+                      </div>
+                      <div class="col-12">
+                        <label for="description" class="form-label-custom">Descrição</label>
+                        <textarea id="description" name="description" class="form-control-custom" rows="4" placeholder="Resumo, observações..." maxlength="2000"></textarea>
+                        <div class="form-text text-end"><span id="desc-count">0</span>/2000 caracteres</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                <a href="book-list.html" class="btn btn-outline-custom" id="cancel-btn-bottom">
+                  Cancelar
+                </a>
+                <button type="submit" id="submit-btn" class="btn btn-primary-custom">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="loading-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.9); z-index: 9999;">
+    <div class="text-center">
+      <div class="spinner spinner-lg text-primary mb-3"></div>
+      <p class="text-muted" id="loading-text">Salvando...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfH" crossorigin="anonymous"></script>
+  <script type="module" src="../assets/js/book-form.js"></script>
+</body>
+</html>

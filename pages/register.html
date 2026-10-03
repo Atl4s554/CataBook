@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CataBook - Cadastro">
+  <title>Cadastro - CataBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);">
+  <div class="container-custom">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-6 col-xl-5">
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+              <svg class="mb-3" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <h1 class="h3 fw-bold text-primary">CataBook</h1>
+              <p class="text-muted">Crie sua conta e comece a catalogar</p>
+            </div>
+
+            <form id="register-form" novalidate>
+              <div class="mb-3">
+                <label for="email" class="form-label-custom">Email</label>
+                <div class="input-group-custom">
+                  <span class="input-group-text" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                  </span>
+                  <input type="email" id="email" name="email" class="form-control-custom" placeholder="seu@email.com" autocomplete="email" required aria-describedby="email-error">
+                </div>
+                <div class="invalid-feedback" id="email-error"></div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label-custom">Senha</label>
+                <div class="input-group-custom">
+                  <span class="input-group-text" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  </span>
+                  <input type="password" id="password" name="password" class="form-control-custom" placeholder="••••••••" autocomplete="new-password" required aria-describedby="password-error password-hint">
+                  <button type="button" class="btn btn-link text-muted p-0 ms-2" id="toggle-password" aria-label="Mostrar senha">
+                    <svg id="password-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </button>
+                </div>
+                <div class="password-strength" aria-hidden="true">
+                  <div class="password-strength__bar" id="password-strength-bar"></div>
+                </div>
+                <div class="password-strength__labels">
+                  <span id="strength-weak">Fraco</span>
+                  <span id="strength-medium">Médio</span>
+                  <span id="strength-strong">Forte</span>
+                </div>
+                <div class="invalid-feedback" id="password-error"></div>
+                <div class="form-text" id="password-hint">Mínimo 6 caracteres</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password_confirm" class="form-label-custom">Confirmar Senha</label>
+                <div class="input-group-custom">
+                  <span class="input-group-text" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  </span>
+                  <input type="password" id="password_confirm" name="password_confirm" class="form-control-custom" placeholder="••••••••" autocomplete="new-password" required aria-describedby="confirm-error">
+                </div>
+                <div class="invalid-feedback" id="confirm-error"></div>
+              </div>
+
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="terms" required>
+                <label class="form-check-label small" for="terms">
+                  Li e aceito os <a href="#" class="text-primary">Termos de Uso</a> e <a href="#" class="text-primary">Política de Privacidade</a>
+                </label>
+                <div class="invalid-feedback">Você deve aceitar os termos</div>
+              </div>
+
+              <button type="submit" id="submit-btn" class="btn btn-primary-custom btn-lg w-100 mb-3">
+                Cadastrar
+              </button>
+            </form>
+
+            <div class="text-center">
+              <p class="mb-0 text-muted">Já tem conta? <a href="login.html" class="fw-medium">Faça login</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-overlay" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.9); z-index: 9999;">
+    <div class="text-center">
+      <div class="spinner spinner-lg text-primary mb-3"></div>
+      <p class="text-muted">Criando conta...</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfH" crossorigin="anonymous"></script>
+  <script type="module" src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('register-form');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('password_confirm');
+      const termsInput = document.getElementById('terms');
+      const toggleBtn = document.getElementById('toggle-password');
+      const passwordEye = document.getElementById('password-eye');
+      const strengthBar = document.getElementById('password-strength-bar');
+      const submitBtn = document.getElementById('submit-btn');
+      const loadingOverlay = document.getElementById('loading-overlay');
+
+      const strengthLabels = {
+        weak: document.getElementById('strength-weak'),
+        medium: document.getElementById('strength-medium'),
+        strong: document.getElementById('strength-strong'),
+      };
+
+      toggleBtn.addEventListener('click', () => {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        passwordEye.innerHTML = type === 'password'
+          ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>'
+          : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      });
+
+      function updateStrengthUI(strength) {
+        strengthBar.className = 'password-strength__bar ' + strength;
+        Object.values(strengthLabels).forEach(el => el.classList.remove('active'));
+        if (strengthLabels[strength]) strengthLabels[strength].classList.add('active');
+      }
+
+      passwordInput.addEventListener('input', () => {
+        const { validatePassword } = await import('../assets/js/validation.js');
+        const result = validatePassword(passwordInput.value);
+        if (passwordInput.value) {
+          updateStrengthUI(result.strength);
+        } else {
+          strengthBar.className = 'password-strength__bar';
+          Object.values(strengthLabels).forEach(el => el.classList.remove('active'));
+        }
+      });
+
+      confirmInput.addEventListener('input', () => {
+        if (confirmInput.value && passwordInput.value !== confirmInput.value) {
+          confirmInput.classList.add('is-invalid');
+        } else {
+          confirmInput.classList.remove('is-invalid');
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        let valid = true;
+        [emailInput, passwordInput, confirmInput, termsInput].forEach(input => input.classList.remove('is-invalid'));
+
+        if (!emailInput.value.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) {
+          emailInput.classList.add('is-invalid');
+          document.getElementById('email-error').textContent = 'Email inválido';
+          valid = false;
+        }
+
+        const { validatePassword } = await import('../assets/js/validation.js');
+        const pwdResult = validatePassword(passwordInput.value);
+        if (!pwdResult.valid) {
+          passwordInput.classList.add('is-invalid');
+          document.getElementById('password-error').textContent = pwdResult.errors.join(', ');
+          valid = false;
+        }
+
+        if (passwordInput.value !== confirmInput.value) {
+          confirmInput.classList.add('is-invalid');
+          document.getElementById('confirm-error').textContent = 'Senhas não conferem';
+          valid = false;
+        }
+
+        if (!termsInput.checked) {
+          termsInput.classList.add('is-invalid');
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        loadingOverlay.classList.remove('d-none');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner spinner-sm me-2"></span>Cadastrando...';
+
+        try {
+          const { auth } = await import('../assets/js/auth.js');
+          await auth.register({
+            email: emailInput.value.trim(),
+            password: passwordInput.value,
+            passwordConfirm: confirmInput.value
+          });
+          window.location.href = 'book-list.html';
+        } catch (error) {
+          loadingOverlay.classList.add('d-none');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Cadastrar';
+
+          if (error.message.includes('email') || error.message.includes('já existe') || error.message.includes('400')) {
+            emailInput.classList.add('is-invalid');
+            document.getElementById('email-error').textContent = 'Este email já está cadastrado';
+          } else {
+            window.showToast?.('Erro ao cadastrar: ' + error.message, 'error');
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

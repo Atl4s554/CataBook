@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CataBook - Sistema de categorização de livros">
+  <title>CataBook</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+</head>
+<body>
+  <script>
+    (function() {
+      const token = sessionStorage.getItem('cata_book_access_token');
+      if (token) {
+        window.location.href = 'pages/book-list.html';
+      } else {
+        window.location.href = 'pages/login.html';
+      }
+    })();
+  </script>
+</body>
+</html>
