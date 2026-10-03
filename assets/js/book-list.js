@@ -48,6 +48,7 @@ function setupEventListeners() {
       state.page = 1;
       syncURL();
       loadBooks();
+      updateFilterButton();
       option.closest('.dropdown-menu').classList.remove('show');
     });
   });
@@ -57,6 +58,7 @@ function setupEventListeners() {
     state.page = 1;
     syncURL();
     loadBooks();
+    updateFilterButton();
   });
 
   if (filterDropdown && window.bootstrap) {
@@ -66,6 +68,36 @@ function setupEventListeners() {
   prevBtn.addEventListener('click', () => changePage(state.page - 1));
   nextBtn.addEventListener('click', () => changePage(state.page + 1));
   newBookBtn.addEventListener('click', () => window.location.href = '/pages/book-form.html');
+
+  updateFilterButton();
+}
+
+function updateFilterButton() {
+  const filterDropdown = document.getElementById('filter-dropdown');
+  if (!filterDropdown) return;
+
+  const sortLabels = {
+    'created_at:desc': 'Mais recentes',
+    'created_at:asc': 'Mais antigos',
+    'title:asc': 'Título (A-Z)',
+    'title:desc': 'Título (Z-A)',
+    'code:asc': 'Código (A-Z)',
+    'code:desc': 'Código (Z-A)',
+  };
+
+  const parts = [];
+  if (state.sort && sortLabels[state.sort]) {
+    parts.push(sortLabels[state.sort]);
+  }
+  if (state.hasCover) {
+    parts.push('Com capa');
+  }
+
+  const text = parts.length > 0 ? parts.join(' · ') : 'Filtros';
+  filterDropdown.innerHTML = `
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+    ${text}
+  `;
 }
 
 function setupUserMenu() {
@@ -93,6 +125,7 @@ function parseURL() {
 
   document.getElementById('search-input').value = state.q;
   document.getElementById('filter-cover').checked = state.hasCover === true;
+  updateFilterButton();
 }
 
 function syncURL() {
