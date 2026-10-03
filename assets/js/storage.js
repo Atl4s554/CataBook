@@ -189,8 +189,3 @@ export const bookRepository = {
     return true;
   },
 };
-
-export function clearAllData() {
-  localStorage.removeItem(BOOKS_KEY);
-  localStorage.removeItem(COVERS_KEY);
-}

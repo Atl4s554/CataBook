@@ -50,10 +50,6 @@ export function validatePassword(password) {
   };
 }
 
-export function checkPasswordMatch(password, confirm) {
-  return password === confirm && password.length > 0;
-}
-
 export function validateFile(file, options = {}) {
   const { maxSize = 5 * 1024 * 1024, allowedTypes = ['image/jpeg', 'image/png', 'image/webp'] } = options;
 
@@ -133,38 +129,6 @@ export function formatISBN(isbn) {
   }
 
   return isbn;
-}
-
-export function validateRequired(value) {
-  return value !== undefined && value !== null && value !== '';
-}
-
-export function validateForm(formElement, rules) {
-  const errors = new Map();
-  let valid = true;
-
-  Object.entries(rules).forEach(([fieldName, fieldRules]) => {
-    const input = formElement.querySelector(`[name="${fieldName}"]`);
-    if (!input) return;
-
-    const value = input.type === 'checkbox' ? input.checked : input.value;
-
-    if (fieldRules.required && !validateRequired(value)) {
-      errors.set(fieldName, fieldRules.message || 'Campo obrigatório');
-      valid = false;
-      return;
-    }
-
-    if (value && fieldRules.validate) {
-      const result = fieldRules.validate(value);
-      if (result !== true) {
-        errors.set(fieldName, result);
-        valid = false;
-      }
-    }
-  });
-
-  return { valid, errors };
 }
 
 export function showError(input, message) {
