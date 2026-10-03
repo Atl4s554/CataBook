@@ -2,6 +2,7 @@ import { api, ApiError } from './api.js';
 import { auth } from './auth.js';
 import { showToast } from './toast.js';
 import { createConfirmModal } from './ui/modal.js';
+import { debounce, escapeHtml } from './utils.js';
 
 const state = {
   page: 1,
@@ -337,20 +338,6 @@ function showGridLoading(show) {
     overlay.classList.add('d-none');
     table.style.opacity = '1';
   }
-}
-
-function debounce(fn, delay) {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -198,11 +198,3 @@ export function setFieldValid(input, isValid) {
   const feedback = input.parentNode.querySelector('.invalid-feedback, .valid-feedback');
   if (feedback) feedback.remove();
 }
-
-export function debounce(fn, delay) {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-}
