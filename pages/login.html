@@ -69,16 +69,6 @@
             <div class="text-center">
               <p class="mb-0 text-muted">Não tem conta? <a href="register.html" class="fw-medium">Cadastre-se</a></p>
             </div>
-
-            <div class="demo-credentials mt-4 p-3" style="background: var(--color-light); border-radius: var(--border-radius); border: 1px solid var(--color-border);">
-              <h6 class="fw-bold mb-2 text-muted">Credenciais de Teste (Demo)</h6>
-              <div class="row g-2">
-              </div>
-              <div class="mt-2">
-                <small class="text-muted d-block">Emails: admin@catalivro.local / user@catalivro.local</small>
-                <small class="text-muted d-block">Senha: 123456</small>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -164,21 +154,6 @@
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         doLogin();
-      });
-
-      document.querySelectorAll('[data-demo-user]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const userType = btn.dataset.demoUser;
-          const credentials = {
-            admin: { email: 'admin@catalivro.local', password: '123456' },
-            user: { email: 'user@catalivro.local', password: '123456' }
-          }[userType];
-
-          emailInput.value = credentials.email;
-          passwordInput.value = credentials.password;
-
-          doLogin();
-        });
       });
     });
   </script>
