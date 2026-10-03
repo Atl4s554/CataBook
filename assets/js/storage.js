@@ -1,24 +1,5 @@
 const BOOKS_KEY = 'cata_book_books';
 const COVERS_KEY = 'cata_book_covers';
-const SEED_KEY = 'cata_book_seeded';
-
-const SEED_BOOKS = [
-  { id: '1', title: 'Dom Casmurro', isbn: '978-85-3590-277-8', code: 'LIV-001', author: 'Machado de Assis', genre: 'Romance', year: 1899, publisher: 'Companhia das Letras', status: 'read', description: 'Clássico da literatura brasileira narrado por Bentinho.', cover_url: null, created_at: '2024-01-15T10:30:00Z', updated_at: '2024-01-15T10:30:00Z' },
-  { id: '2', title: 'O Senhor dos Anéis: A Sociedade do Anel', isbn: '978-85-3361-334-9', code: 'LIV-002', author: 'J.R.R. Tolkien', genre: 'Fantasia', year: 1954, publisher: 'HarperCollins', status: 'reading', description: 'Primeiro volume da trilogia épica.', cover_url: null, created_at: '2024-01-20T14:15:00Z', updated_at: '2024-01-20T14:15:00Z' },
-  { id: '3', title: '1984', isbn: '978-85-254-3549-2', code: 'LIV-003', author: 'George Orwell', genre: 'Ficção Científica', year: 1949, publisher: 'Companhia das Letras', status: 'read', description: 'Distopia clássica sobre vigilância totalitária.', cover_url: null, created_at: '2024-02-01T09:00:00Z', updated_at: '2024-02-01T09:00:00Z' },
-  { id: '4', title: 'A Revolução dos Bichos', isbn: '978-85-3591-484-9', code: 'LIV-004', author: 'George Orwell', genre: 'Fábula Política', year: 1945, publisher: 'Companhia das Letras', status: 'want_to_read', description: 'Sátira sobre revolução e corrupção.', cover_url: null, created_at: '2024-02-10T16:45:00Z', updated_at: '2024-02-10T16:45:00Z' },
-  { id: '5', title: 'Cem Anos de Solidão', isbn: '978-85-3590-839-6', code: 'LIV-005', author: 'Gabriel García Márquez', genre: 'Realismo Mágico', year: 1967, publisher: 'Record', status: 'read', description: 'Obra-prima do realismo mágico latino-americano.', cover_url: null, created_at: '2024-02-15T11:20:00Z', updated_at: '2024-02-15T11:20:00Z' },
-];
-
-function seedIfNeeded() {
-  if (!localStorage.getItem(SEED_KEY)) {
-    localStorage.setItem(BOOKS_KEY, JSON.stringify(SEED_BOOKS));
-    localStorage.setItem(COVERS_KEY, JSON.stringify({}));
-    localStorage.setItem(SEED_KEY, '1');
-  }
-}
-
-seedIfNeeded();
 
 function readBooks() {
   try {

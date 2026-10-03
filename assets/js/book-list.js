@@ -226,7 +226,7 @@ function createBookRow(book) {
       <td class="text-muted small">${escapeHtml(book.author || '—')}</td>
       <td class="text-muted small">${escapeHtml(book.genre || '—')}</td>
       <td>
-        <div class="d-flex gap-1">
+        <div class="d-flex flex-column gap-1">
           <a href="/pages/book-form.html?id=${book.id}" class="btn btn-outline-custom btn-sm btn-edit" data-id="${book.id}" title="Editar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           </a>
@@ -293,14 +293,16 @@ function updateResultsInfo() {
 }
 
 function confirmDelete(id, title) {
-  const modal = createConfirmModal(
+  const { modal, backdrop } = createConfirmModal(
     'Excluir Livro',
     `Tem certeza que deseja excluir "<strong>${escapeHtml(title)}</strong>"? Esta ação não pode ser desfeita.`,
     async () => {
       await deleteBook(id);
       modal.remove();
+      backdrop.remove();
     }
   );
+  document.body.appendChild(backdrop);
   document.body.appendChild(modal);
   modal.querySelector('.btn-danger-custom').focus();
 }
@@ -325,7 +327,6 @@ function createConfirmModal(title, message, onConfirm) {
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-labelledby', 'modal-title');
   modal.innerHTML = `
-    <div class="modal-backdrop-custom" data-dismiss="modal"></div>
     <div class="modal-custom__content">
       <header class="modal-custom__header">
         <h2 id="modal-title" class="modal-custom__title">${title}</h2>
@@ -339,8 +340,26 @@ function createConfirmModal(title, message, onConfirm) {
     </div>
   `;
 
+  // Create separate backdrop (clicking backdrop closes modal)
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop-custom';
+  backdrop.setAttribute('data-dismiss', 'modal');
+
+  // Clicking backdrop closes modal
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) {
+      modal.remove();
+      backdrop.remove();
+    }
+  });
+
   modal.querySelectorAll('[data-dismiss="modal"]').forEach(el => {
-    el.addEventListener('click', () => modal.remove());
+    if (el !== backdrop) {
+      el.addEventListener('click', () => {
+        modal.remove();
+        backdrop.remove();
+      });
+    }
   });
 
   modal.querySelector('.btn-danger-custom').addEventListener('click', () => {
@@ -350,11 +369,12 @@ function createConfirmModal(title, message, onConfirm) {
   document.addEventListener('keydown', function escHandler(e) {
     if (e.key === 'Escape') {
       modal.remove();
+      backdrop.remove();
       document.removeEventListener('keydown', escHandler);
     }
   });
 
-  return modal;
+  return { modal, backdrop };
 }
 
 function showGridLoading(show) {

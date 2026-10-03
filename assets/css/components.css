@@ -653,13 +653,23 @@
 .modal-custom__close {
   background: none;
   border: none;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-xxl);
   line-height: 1;
   color: var(--color-text-muted);
   cursor: pointer;
-  padding: 0;
+  padding: var(--space-xs);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
 }
-.modal-custom__close:hover { color: var(--color-text); }
+.modal-custom__close:hover { 
+  color: var(--color-text); 
+  background: var(--color-light);
+}
 
 .modal-custom__body { padding: var(--space-lg); }
 .modal-custom__footer {
