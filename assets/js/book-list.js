@@ -58,6 +58,11 @@ function setupEventListeners() {
     syncURL();
     loadBooks();
   });
+
+  if (filterDropdown && window.bootstrap) {
+    new window.bootstrap.Dropdown(filterDropdown);
+  }
+
   prevBtn.addEventListener('click', () => changePage(state.page - 1));
   nextBtn.addEventListener('click', () => changePage(state.page + 1));
   newBookBtn.addEventListener('click', () => window.location.href = '/pages/book-form.html');
@@ -66,13 +71,11 @@ function setupEventListeners() {
 function setupUserMenu() {
   const user = auth.getUser();
   const userNameEl = document.getElementById('user-name');
-  const logoutBtn = document.getElementById('logout-btn');
+  const logoutBtn = document.querySelector('[data-action="logout"]');
 
-  if (userNameEl && user?.name) {
-    userNameEl.textContent = user.name;
-  }
-  if (userNameEl && user?.email) {
-    userNameEl.textContent = user.email;
+  if (userNameEl && user) {
+    userNameEl.textContent = user.name || user.email;
+    userNameEl.classList.remove('d-none');
   }
 
   logoutBtn?.addEventListener('click', (e) => {
