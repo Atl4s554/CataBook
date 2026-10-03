@@ -42,10 +42,20 @@ function initTheme() {
 function createThemeToggleButton() {
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'btn btn-outline-custom btn-sm theme-toggle';
+  btn.className = 'btn theme-toggle d-flex align-items-center gap-2 px-3 py-2';
+  btn.style.cssText = `
+    background: var(--color-white);
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-fast);
+  `;
   btn.setAttribute('aria-label', 'Alternar tema');
   btn.innerHTML = `
-    <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <svg class="theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -56,11 +66,23 @@ function createThemeToggleButton() {
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
     </svg>
-    <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <svg class="theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
     </svg>
+    <span class="theme-text-light">Tema Claro</span>
+    <span class="theme-text-dark">Tema Escuro</span>
   `;
   btn.addEventListener('click', toggleTheme);
+  
+  btn.addEventListener('mouseenter', () => {
+    btn.style.borderColor = 'var(--color-primary)';
+    btn.style.boxShadow = 'var(--shadow-md)';
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.borderColor = 'var(--color-border)';
+    btn.style.boxShadow = 'var(--shadow-sm)';
+  });
+  
   return btn;
 }
 
