@@ -19,11 +19,21 @@ function init() {
   setupISBNValidation();
   setupAccordion();
   setupDirtyCheck();
+  updateUserName();
 
   if (currentMode === 'edit') {
     loadBook(currentBookId);
   } else {
     updatePageTitle('Novo Livro');
+  }
+}
+
+function updateUserName() {
+  const user = auth.getUser();
+  const userNameEl = document.getElementById('user-name');
+  if (user && userNameEl) {
+    userNameEl.textContent = user.name || user.email;
+    userNameEl.classList.remove('d-none');
   }
 }
 
@@ -39,6 +49,12 @@ function setupEventListeners() {
 
   const removeCoverBtn = document.getElementById('remove-cover');
   removeCoverBtn?.addEventListener('click', removeCover);
+
+  const logoutBtn = document.querySelector('[data-action="logout"]');
+  logoutBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    auth.logout();
+  });
 }
 
 function setupDropZone() {
