@@ -49,6 +49,43 @@
   --form-max-width: 480px;
 }
 
+[data-theme="dark"] {
+  --color-primary: #3498db;
+  --color-primary-light: #5dade2;
+  --color-primary-dark: #2980b9;
+  --color-secondary: #e74c3c;
+  --color-secondary-hover: #ec7063;
+  --color-success: #2ecc71;
+  --color-warning: #f39c12;
+  --color-info: #3498db;
+  --color-light: #1e272e;
+  --color-white: #2c3e50;
+  --color-text: #ecf0f1;
+  --color-text-muted: #95a5a6;
+  --color-border: #34495e;
+  --color-border-focus: #3498db;
+  --color-error: #e74c3c;
+  --color-error-bg: #2c1a1a;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.theme-toggle .theme-icon-sun {
+  display: none;
+}
+.theme-toggle .theme-icon-moon {
+  display: inline-block;
+}
+
+[data-theme="dark"] .theme-toggle .theme-icon-sun {
+  display: inline-block;
+}
+[data-theme="dark"] .theme-toggle .theme-icon-moon {
+  display: none;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
