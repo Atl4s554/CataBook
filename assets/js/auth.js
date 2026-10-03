@@ -97,7 +97,9 @@ function redirectIfAuthenticated() {
   return false;
 }
 
-initAuth();
+// initAuth será chamado no DOMContentLoaded para garantir que sessionStorage esteja disponível
+
+document.addEventListener('DOMContentLoaded', initAuth);
 
 export const auth = {
   login,
