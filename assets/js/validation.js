@@ -7,27 +7,46 @@ export function validateEmail(email) {
 export function validatePassword(password) {
   const errors = [];
   let strength = 'weak';
+  const requirements = {
+    minLength: false,
+    hasUpper: false,
+    hasLower: false,
+    hasNumber: false,
+    hasSpecial: false,
+  };
 
   if (!password) {
     errors.push('Senha é obrigatória');
-    return { valid: false, strength, errors };
+    return { valid: false, strength, errors, requirements };
   }
 
-  if (password.length < 6) {
-    errors.push('Mínimo 6 caracteres');
+  if (password.length < 10) {
+    errors.push('Mínimo 10 caracteres');
+  } else {
+    requirements.minLength = true;
   }
-  if (password.length >= 8) strength = 'medium';
-  if (/[A-Z]/.test(password)) strength = 'medium';
-  if (/[0-9]/.test(password)) strength = 'medium';
-  if (/[^A-Za-z0-9]/.test(password)) strength = 'strong';
-  if (password.length >= 12 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[^A-Za-z0-9]/.test(password)) {
-    strength = 'strong';
-  }
+  if (/[A-Z]/.test(password)) requirements.hasUpper = true;
+  else errors.push('Pelo menos uma letra maiúscula');
+  
+  if (/[a-z]/.test(password)) requirements.hasLower = true;
+  else errors.push('Pelo menos uma letra minúscula');
+  
+  if (/[0-9]/.test(password)) requirements.hasNumber = true;
+  else errors.push('Pelo menos um número');
+  
+  if (/[^A-Za-z0-9]/.test(password)) requirements.hasSpecial = true;
+  else errors.push('Pelo menos um caractere especial (!@#$%^&*...)');
+
+  const metCount = Object.values(requirements).filter(Boolean).length;
+  if (metCount <= 2) strength = 'weak';
+  else if (metCount <= 4) strength = 'medium';
+  else strength = 'strong';
 
   return {
     valid: errors.length === 0,
     strength,
     errors,
+    requirements,
   };
 }
 

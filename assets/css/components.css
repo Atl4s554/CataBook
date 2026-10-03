@@ -416,6 +416,34 @@
   font-weight: 500;
 }
 
+.password-requirements {
+  transition: opacity var(--transition-fast), transform var(--transition-fast), max-height var(--transition-base);
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.password-requirements.show {
+  max-height: 300px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.password-requirements .req-icon {
+  flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.card-sm {
+  border-radius: var(--border-radius-sm);
+  border-width: 1px;
+}
+
+.password-requirements ul li {
+  transition: color var(--transition-fast);
+}
+
 .isbn-feedback {
   display: flex;
   align-items: center;
