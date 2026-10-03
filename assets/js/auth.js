@@ -72,6 +72,18 @@ function clearAuth() {
 }
 
 async function login(credentials) {
+  const demoUsers = {
+    'admin@catalivro.local': { id: 'admin', name: 'Admin Demo', email: 'admin@catalivro.local', role: 'admin' },
+    'user@catalivro.local': { id: 'user', name: 'Usuário Demo', email: 'user@catalivro.local', role: 'user' }
+  };
+
+  if (credentials.password === '123456' && demoUsers[credentials.email]) {
+    const user = demoUsers[credentials.email];
+    const token = 'demo-token-' + user.id + '-' + Date.now();
+    setTokens({ accessToken: token, user });
+    return { accessToken: token, user };
+  }
+
   const { api } = await import('./api.js');
   const response = await api.post('/auth/login', credentials);
   if (response.success && response.data) {

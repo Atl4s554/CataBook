@@ -9,6 +9,7 @@ let coverFile = null;
 let originalData = null;
 
 function init() {
+  console.log('Init book-form');
   const params = new URLSearchParams(window.location.search);
   currentBookId = params.get('id');
   currentMode = currentBookId ? 'edit' : 'create';
@@ -87,11 +88,14 @@ function setupISBNValidation() {
 
 function setupAccordion() {
   const headers = document.querySelectorAll('.accordion-custom__header');
+  console.log('Found accordion headers:', headers.length);
   headers.forEach(header => {
-    header.addEventListener('click', () => {
+    header.addEventListener('click', (e) => { e.preventDefault();
+      console.log('Accordion clicked');
       const expanded = header.getAttribute('aria-expanded') === 'true';
       header.setAttribute('aria-expanded', !expanded);
       const body = header.nextElementSibling;
+      console.log('Body:', body);
       if (!expanded) {
         body.removeAttribute('hidden');
       } else {
