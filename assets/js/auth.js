@@ -3,30 +3,8 @@ const USER_KEY = 'cata_book_user';
 
 let accessToken = null;
 let user = null;
-let isDemoMode = false;
-
-function isDemoModeCheck() {
-  const hostname = window.location.hostname;
-  return window.location.protocol === 'file:' ||
-         hostname === 'localhost' ||
-         hostname === '127.0.0.1' ||
-         hostname === '0.0.0.0' ||
-         hostname.endsWith('.local');
-}
-
-function initDemoMode() {
-  if (isDemoModeCheck() && !sessionStorage.getItem('cata_book_demo_disabled')) {
-    isDemoMode = true;
-    accessToken = 'demo-token-' + Date.now();
-    user = { id: 'demo', name: 'Usuário Demo', email: 'demo@catalivro.local' };
-    sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-    sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-    console.log('[CataBook] Modo demo ativado (file:// detectado)');
-  }
-}
 
 function initAuth() {
-  initDemoMode();
   try {
     const storedToken = sessionStorage.getItem(ACCESS_TOKEN_KEY);
     const storedUser = sessionStorage.getItem(USER_KEY);
@@ -65,10 +43,6 @@ function isAuthenticated() {
   return !!accessToken;
 }
 
-function getDemoMode() {
-  return isDemoMode;
-}
-
 function clearAuth() {
   accessToken = null;
   user = null;
@@ -77,18 +51,6 @@ function clearAuth() {
 }
 
 async function login(credentials) {
-  const demoUsers = {
-    'admin@catalivro.local': { id: 'admin', name: 'Admin Demo', email: 'admin@catalivro.local', role: 'admin' },
-    'user@catalivro.local': { id: 'user', name: 'Usuário Demo', email: 'user@catalivro.local', role: 'user' }
-  };
-
-  if (credentials.password === '123456' && demoUsers[credentials.email]) {
-    const user = demoUsers[credentials.email];
-    const token = 'demo-token-' + user.id + '-' + Date.now();
-    setTokens({ accessToken: token, user });
-    return { accessToken: token, user };
-  }
-
   const { api } = await import('./api.js');
   const response = await api.post('/auth/login', credentials);
   if (response.success && response.data) {
@@ -144,7 +106,6 @@ export const auth = {
   getAccessToken,
   getUser,
   isAuthenticated,
-  getDemoMode,
   requireAuth,
   redirectIfAuthenticated,
   setAccessToken,

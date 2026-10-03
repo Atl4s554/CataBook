@@ -36,9 +36,7 @@ function initRouteGuards() {
   if (isPublicPage) {
     auth.redirectIfAuthenticated();
   } else if (!path.endsWith('index.html') && path !== '/' && path !== '') {
-    if (!auth.getDemoMode()) {
-      auth.requireAuth();
-    }
+    auth.requireAuth();
   }
 }
 
