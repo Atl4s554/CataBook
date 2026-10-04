@@ -13,6 +13,8 @@ export function showToast(message, type = 'info') {
   const container = getToastContainer();
   const toast = document.createElement('div');
   toast.className = `toast toast--${type}`;
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'polite');
   toast.innerHTML = `
     <div class="toast__content">
       <div class="toast__message">${message}</div>
