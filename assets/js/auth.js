@@ -1,3 +1,5 @@
+import { setTokenGetter, setUnauthorizedHandler } from './api.js';
+
 const ACCESS_TOKEN_KEY = 'cata_book_access_token';
 const USER_KEY = 'cata_book_user';
 
@@ -13,6 +15,11 @@ function initAuth() {
   } catch {
     clearAuth();
   }
+  setTokenGetter(getAccessToken);
+  setUnauthorizedHandler(() => {
+    clearAuth();
+    window.location.href = '/pages/login.html';
+  });
 }
 
 function setTokens(tokenData) {

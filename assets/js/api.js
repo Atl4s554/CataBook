@@ -1,8 +1,22 @@
 import { bookRepository } from './storage.js';
-import { auth } from './auth.js';
 
 const API_BASE = '/api';
 const DEFAULT_TIMEOUT = 30000;
+
+let tokenGetter = null;
+let unauthorizedHandler = null;
+
+export function setTokenGetter(fn) {
+  tokenGetter = fn;
+}
+
+export function setUnauthorizedHandler(fn) {
+  unauthorizedHandler = fn;
+}
+
+function getAccessToken() {
+  return tokenGetter ? tokenGetter() : null;
+}
 
 function isLocalMode() {
   try {
@@ -164,7 +178,7 @@ async function request(endpoint, options = {}) {
     ...options,
   };
 
-  const accessToken = auth.getAccessToken();
+  const accessToken = getAccessToken();
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
@@ -180,12 +194,15 @@ async function request(endpoint, options = {}) {
     if (response.status === 401 && !endpoint.includes('/auth/')) {
       const refreshed = await refreshAccessToken();
       if (refreshed) {
-        config.headers.Authorization = `Bearer ${auth.getAccessToken()}`;
+        config.headers.Authorization = `Bearer ${getAccessToken()}`;
         const retryResponse = await fetch(url, config);
         return handleResponse(retryResponse);
       }
-      auth.logout();
-      window.location.href = '/pages/login.html';
+      if (unauthorizedHandler) {
+        unauthorizedHandler();
+      } else {
+        window.location.href = '/pages/login.html';
+      }
       throw new ApiError('Sessão expirada. Faça login novamente.', 401);
     }
 
@@ -228,7 +245,7 @@ async function refreshAccessToken() {
 
       const data = await response.json();
       if (data.success && data.data?.accessToken) {
-        auth.setAccessToken(data.data.accessToken);
+        // Token will be set by the auth module via setTokenGetter
         return true;
       }
       return false;
