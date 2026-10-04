@@ -274,15 +274,10 @@ async function handleSubmit(e) {
 
   try {
     const formData = new FormData();
-    formData.append('title', document.getElementById('title').value.trim());
-    formData.append('isbn', document.getElementById('isbn').value.trim());
-    formData.append('quantity', document.getElementById('quantity').value.trim());
-    formData.append('code', document.getElementById('code').value.trim());
-    formData.append('author', document.getElementById('author').value.trim());
-    formData.append('genre', document.getElementById('genre').value.trim());
-    formData.append('year', document.getElementById('year').value.trim());
-    formData.append('publisher', document.getElementById('publisher').value.trim());
-    formData.append('description', document.getElementById('description').value.trim());
+    const fieldValues = getFormValues();
+    Object.entries(fieldValues).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
     if (coverFile) {
       formData.append('cover', coverFile);
@@ -313,6 +308,20 @@ async function handleSubmit(e) {
   } finally {
     showLoading(false, submitBtn);
   }
+}
+
+function getFormValues() {
+  return {
+    title: document.getElementById('title').value.trim(),
+    isbn: document.getElementById('isbn').value.trim(),
+    quantity: document.getElementById('quantity').value.trim(),
+    code: document.getElementById('code').value.trim(),
+    author: document.getElementById('author').value.trim(),
+    genre: document.getElementById('genre').value.trim(),
+    year: document.getElementById('year').value.trim(),
+    publisher: document.getElementById('publisher').value.trim(),
+    description: document.getElementById('description').value.trim(),
+  };
 }
 
 function validateForm() {
