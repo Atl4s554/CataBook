@@ -3,6 +3,9 @@ import { auth } from './auth.js';
 import { validateISBN, formatISBN, validateFile, showError, clearError, setFieldValid } from './validation.js';
 import { showToast } from './toast.js';
 import { createConfirmModal } from './ui/modal.js';
+import { createFormState } from './ui/form-state.js';
+
+const formState = createFormState();
 
 let currentMode = 'create';
 let currentBookId = null;
@@ -126,7 +129,7 @@ function setupDirtyCheck() {
   const inputs = form.querySelectorAll('input, textarea, select');
   inputs.forEach(input => {
     input.addEventListener('change', () => {
-      window.formDirty = true;
+      formState.markDirty();
     });
   });
 }
@@ -294,7 +297,7 @@ async function handleSubmit(e) {
 
     if (response.success) {
       showToast(currentMode === 'edit' ? 'Livro atualizado com sucesso' : 'Livro cadastrado com sucesso', 'success');
-      window.formDirty = false;
+      formState.markClean();
       setTimeout(() => window.location.href = '/pages/book-list.html', 1000);
     }
   } catch (error) {
@@ -354,7 +357,7 @@ function validateForm() {
 
 function handleCancel(e) {
   if (e) e.preventDefault();
-  if (window.formDirty) {
+  if (formState.isDirty()) {
     const { modal, backdrop } = createConfirmModal(
       'Descartar alterações?',
       'Você tem alterações não salvas. Tem certeza que deseja sair sem salvar?',

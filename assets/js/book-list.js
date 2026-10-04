@@ -3,16 +3,9 @@ import { auth } from './auth.js';
 import { showToast } from './toast.js';
 import { createConfirmModal } from './ui/modal.js';
 import { debounce, escapeHtml } from './utils.js';
+import { createBookListState } from './ui/state.js';
 
-const state = {
-  page: 1,
-  limit: 30,
-  q: '',
-  sort: 'created_at:desc',
-  hasCover: null,
-  totalPages: 1,
-  totalItems: 0,
-};
+const state = createBookListState();
 
 let debouncedSearch = null;
 
@@ -35,8 +28,7 @@ function setupEventListeners() {
   const sortOptions = document.querySelectorAll('.sort-option');
 
   debouncedSearch = debounce((term) => {
-    state.q = term;
-    state.page = 1;
+    state.update({ q: term, page: 1 });
     syncURL();
     loadBooks();
   }, 300);
@@ -46,8 +38,7 @@ function setupEventListeners() {
   sortOptions.forEach(option => {
     option.addEventListener('click', (e) => {
       e.preventDefault();
-      state.sort = option.dataset.sort;
-      state.page = 1;
+      state.update({ sort: option.dataset.sort, page: 1 });
       syncURL();
       loadBooks();
       updateFilterButton();
@@ -56,8 +47,7 @@ function setupEventListeners() {
   });
 
   filterCover.addEventListener('change', (e) => {
-    state.hasCover = e.target.checked ? true : null;
-    state.page = 1;
+    state.update({ hasCover: e.target.checked ? true : null, page: 1 });
     syncURL();
     loadBooks();
     updateFilterButton();
@@ -67,8 +57,8 @@ function setupEventListeners() {
     new window.bootstrap.Dropdown(filterDropdown);
   }
 
-  prevBtn.addEventListener('click', () => changePage(state.page - 1));
-  nextBtn.addEventListener('click', () => changePage(state.page + 1));
+  prevBtn.addEventListener('click', () => changePage(state.get('page') - 1));
+  nextBtn.addEventListener('click', () => changePage(state.get('page') + 1));
   newBookBtn.addEventListener('click', () => window.location.href = '/pages/book-form.html');
 
   updateFilterButton();
@@ -88,10 +78,10 @@ function updateFilterButton() {
   };
 
   const parts = [];
-  if (state.sort && sortLabels[state.sort]) {
-    parts.push(sortLabels[state.sort]);
+  if (state.get('sort') && sortLabels[state.get('sort')]) {
+    parts.push(sortLabels[state.get('sort')]);
   }
-  if (state.hasCover) {
+  if (state.get('hasCover')) {
     parts.push('Com capa');
   }
 
@@ -120,22 +110,24 @@ function setupUserMenu() {
 
 function parseURL() {
   const params = new URLSearchParams(window.location.search);
-  state.page = parseInt(params.get('page')) || 1;
-  state.q = params.get('q') || '';
-  state.sort = params.get('sort') || 'created_at:desc';
-  state.hasCover = params.get('has_cover') === 'true' ? true : null;
+  state.update({
+    page: parseInt(params.get('page')) || 1,
+    q: params.get('q') || '',
+    sort: params.get('sort') || 'created_at:desc',
+    hasCover: params.get('has_cover') === 'true' ? true : null,
+  });
 
-  document.getElementById('search-input').value = state.q;
-  document.getElementById('filter-cover').checked = state.hasCover === true;
+  document.getElementById('search-input').value = state.get('q');
+  document.getElementById('filter-cover').checked = state.get('hasCover') === true;
   updateFilterButton();
 }
 
 function syncURL() {
   const params = new URLSearchParams();
-  if (state.page > 1) params.set('page', state.page);
-  if (state.q) params.set('q', state.q);
-  if (state.sort !== 'created_at:desc') params.set('sort', state.sort);
-  if (state.hasCover === true) params.set('has_cover', 'true');
+  if (state.get('page') > 1) params.set('page', state.get('page'));
+  if (state.get('q')) params.set('q', state.get('q'));
+  if (state.get('sort') !== 'created_at:desc') params.set('sort', state.get('sort'));
+  if (state.get('hasCover') === true) params.set('has_cover', 'true');
 
   const newURL = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
   window.history.pushState({}, '', newURL);
@@ -152,19 +144,18 @@ async function loadBooks() {
 
   try {
     const params = {
-      page: state.page,
-      limit: state.limit,
-      sort: state.sort,
+      page: state.get('page'),
+      limit: state.get('limit'),
+      sort: state.get('sort'),
     };
-    if (state.q) params.q = state.q;
-    if (state.hasCover !== null) params.has_cover = state.hasCover;
+    if (state.get('q')) params.q = state.get('q');
+    if (state.get('hasCover') !== null) params.has_cover = state.get('hasCover');
 
     const response = await api.get('/books', params);
 
     if (response.success && response.data) {
       const { books, pagination: pag } = response.data;
-      state.totalPages = pag.totalPages || 1;
-      state.totalItems = pag.total || 0;
+      state.update({ totalPages: pag.totalPages || 1, totalItems: pag.total || 0 });
 
       renderBooks(books);
       renderPagination();
@@ -177,7 +168,7 @@ async function loadBooks() {
         table.style.display = 'none';
         emptyState.style.display = 'block';
       }
-      pagination.style.display = state.totalPages > 1 ? 'flex' : 'none';
+      pagination.style.display = state.get('totalPages') > 1 ? 'flex' : 'none';
     }
   } catch (error) {
     showToast('Erro ao carregar livros: ' + error.message, 'error');
@@ -248,13 +239,13 @@ function renderPagination() {
   const prevBtn = document.getElementById('prev-page');
   const nextBtn = document.getElementById('next-page');
 
-  prevBtn.disabled = state.page <= 1;
-  nextBtn.disabled = state.page >= state.totalPages;
+  prevBtn.disabled = state.get('page') <= 1;
+  nextBtn.disabled = state.get('page') >= state.get('totalPages');
 
   let pagesHtml = '';
   const maxVisible = 5;
-  let start = Math.max(1, state.page - Math.floor(maxVisible / 2));
-  let end = Math.min(state.totalPages, start + maxVisible - 1);
+  let start = Math.max(1, state.get('page') - Math.floor(maxVisible / 2));
+  let end = Math.min(state.get('totalPages'), start + maxVisible - 1);
 
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1);
@@ -262,7 +253,7 @@ function renderPagination() {
 
   for (let i = start; i <= end; i++) {
     pagesHtml += `
-      <a href="#" class="page-link-custom ${i === state.page ? 'active' : ''}" data-page="${i}">${i}</a>
+      <a href="#" class="page-link-custom ${i === state.get('page') ? 'active' : ''}" data-page="${i}">${i}</a>
     `;
   }
 
@@ -277,8 +268,8 @@ function renderPagination() {
 }
 
 function changePage(page) {
-  if (page < 1 || page > state.totalPages) return;
-  state.page = page;
+  if (page < 1 || page > state.get('totalPages')) return;
+  state.update({ page });
   syncURL();
   loadBooks();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -286,12 +277,12 @@ function changePage(page) {
 
 function updateResultsInfo() {
   const info = document.getElementById('results-info');
-  if (state.totalItems === 0) {
+  if (state.get('totalItems') === 0) {
     info.textContent = 'Nenhum livro encontrado';
   } else {
-    const start = (state.page - 1) * state.limit + 1;
-    const end = Math.min(state.page * state.limit, state.totalItems);
-    info.textContent = `Mostrando ${start} a ${end} de ${state.totalItems} livro(s)`;
+    const start = (state.get('page') - 1) * state.get('limit') + 1;
+    const end = Math.min(state.get('page') * state.get('limit'), state.get('totalItems'));
+    info.textContent = `Mostrando ${start} a ${end} de ${state.get('totalItems')} livro(s)`;
   }
 }
 
