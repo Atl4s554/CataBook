@@ -1,4 +1,13 @@
+import os
 import requests
+from dotenv import load_dotenv
+
+
+
+load_dotenv()
+API_KEY = os.getenv("GOOGLE_BOOKS_API_KEY")
+
+
 
 GOOGLE_BOOKS_URL = "https://www.googleapis.com/books/v1/volumes"
 
@@ -14,7 +23,7 @@ def buscar_livro_por_isbn(isbn: str) -> dict | None:
 
     resposta = requests.get(
         GOOGLE_BOOKS_URL,
-        params={"q": f"isbn:{isbn}"},
+        params={"q": f"isbn:{isbn}", "key": API_KEY},
         timeout=10,
     )
     resposta.raise_for_status()  # lança erro se a API responder 4xx/5xx
