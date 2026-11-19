@@ -32,7 +32,19 @@ CREATE TABLE IF NOT EXISTS books (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id            SERIAL PRIMARY KEY,
+    name          TEXT NOT NULL,
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    role          TEXT NOT NULL DEFAULT 'user',
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 """
+
+# Campos pelos quais a listagem pode ser ordenada (lista fixa: segura contra SQL injection).
+ORDENAVEIS = {"created_at", "title", "code"}
 
 
 def conectar() -> psycopg.Connection:
@@ -77,6 +89,34 @@ def listar_livros(busca: str | None = None) -> list[dict]:
         return conn.execute("SELECT * FROM books ORDER BY title").fetchall()
 
 
+def listar_livros_paginado(busca: str | None = None, ordenar: str = "created_at",
+                           direcao: str = "desc", apenas_com_capa: bool = False,
+                           pagina: int = 1, limite: int = 10) -> tuple[list[dict], int]:
+    """Listagem para a tela de livros: busca, ordenação, filtro de capa e paginação.
+    Devolve (livros da página, total de livros que bateram com o filtro)."""
+    ordenar = ordenar if ordenar in ORDENAVEIS else "created_at"
+    direcao = "ASC" if str(direcao).lower() == "asc" else "DESC"
+
+    condicoes: list[str] = []
+    params: list = []
+    if busca:
+        termo = f"%{busca}%"
+        condicoes.append("(title ILIKE %s OR author ILIKE %s OR isbn ILIKE %s OR code ILIKE %s)")
+        params += [termo, termo, termo, termo]
+    if apenas_com_capa:
+        condicoes.append("(cover_url IS NOT NULL AND cover_url <> '')")
+    where = ("WHERE " + " AND ".join(condicoes)) if condicoes else ""
+
+    with conectar() as conn:
+        total = conn.execute(f"SELECT COUNT(*) AS n FROM books {where}", params).fetchone()["n"]
+        livros = conn.execute(
+            f"SELECT * FROM books {where} ORDER BY {ordenar} {direcao}, id {direcao} "
+            "LIMIT %s OFFSET %s",
+            params + [limite, (pagina - 1) * limite],
+        ).fetchall()
+    return livros, total
+
+
 def buscar_livro(livro_id: int) -> dict | None:
     with conectar() as conn:
         return conn.execute(
@@ -102,6 +142,30 @@ def remover_livro(livro_id: int) -> bool:
     with conectar() as conn:
         cur = conn.execute("DELETE FROM books WHERE id = %s", (livro_id,))
         return cur.rowcount > 0
+
+
+def criar_usuario(nome: str, email: str, senha_hash: str, role: str = "user") -> dict:
+    """Cria um usuário. Lança psycopg.errors.UniqueViolation se o email já existir."""
+    with conectar() as conn:
+        return conn.execute(
+            "INSERT INTO users (name, email, password_hash, role) "
+            "VALUES (%s, %s, %s, %s) RETURNING *",
+            (nome, email, senha_hash, role),
+        ).fetchone()
+
+
+def buscar_usuario_por_email(email: str) -> dict | None:
+    with conectar() as conn:
+        return conn.execute(
+            "SELECT * FROM users WHERE email = %s", (email,)
+        ).fetchone()
+
+
+def buscar_usuario_por_id(usuario_id: int) -> dict | None:
+    with conectar() as conn:
+        return conn.execute(
+            "SELECT * FROM users WHERE id = %s", (usuario_id,)
+        ).fetchone()
 
 
 def importar_csv(caminho: str | Path) -> tuple[int, list[str]]:

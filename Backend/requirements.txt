@@ -1,5 +1,8 @@
-
-
 requests
 python-dotenv
 psycopg[binary]
+fastapi
+uvicorn
+python-multipart
+pyjwt
+bcrypt
