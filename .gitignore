@@ -1,0 +1,6 @@
+.env
+.venv/
+__pycache__/
+Backend/uploads/
+livros_exemplo.csv
+livros_api.csv
