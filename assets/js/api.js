@@ -1,6 +1,6 @@
 import { bookRepository } from './storage.js';
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:8001/api';
 const DEFAULT_TIMEOUT = 30000;
 
 let tokenGetter = null;
